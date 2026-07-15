@@ -3,7 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import axios from "axios";
 
+// ── 87 conseils santé complets ───────────────────────────────────────────────
 const tousLesConseils = [
+  // Maladies & infections (21)
   { icon: "🤧", categorie: "Maladies & infections", titre: "Grippe", texte: "La grippe se transmet par voie aérienne. Lavez-vous les mains régulièrement et évitez les lieux bondés en période épidémique." },
   { icon: "🦟", categorie: "Maladies & infections", titre: "Paludisme", texte: "Dormez sous une moustiquaire imprégnée chaque nuit. Le paludisme est la première cause de consultation au Cameroun — il est évitable." },
   { icon: "🌡️", categorie: "Maladies & infections", titre: "Typhoïde", texte: "Buvez uniquement de l'eau potable ou bouillie. La typhoïde se transmet par l'eau et les aliments contaminés." },
@@ -25,6 +27,7 @@ const tousLesConseils = [
   { icon: "🔇", categorie: "Maladies & infections", titre: "Extinction de voix", texte: "Ménagez votre voix et évitez de chuchoter — cela fatigue davantage les cordes vocales. Buvez tiède et reposez-vous." },
   { icon: "😮‍💨", categorie: "Maladies & infections", titre: "Toux", texte: "Une toux qui dure plus de 3 semaines doit être évaluée par un médecin. Elle peut cacher une infection pulmonaire." },
   { icon: "🌡️", categorie: "Maladies & infections", titre: "Fièvre", texte: "Une fièvre au-dessus de 38,5°C nécessite une attention médicale, surtout chez l'enfant. Ne laissez pas monter sans surveiller." },
+  // Maladies chroniques (12)
   { icon: "💨", categorie: "Maladies chroniques", titre: "Asthme", texte: "Gardez toujours votre inhalateur à portée de main. Évitez les déclencheurs comme la fumée, la poussière et les allergènes." },
   { icon: "🦴", categorie: "Maladies chroniques", titre: "Arthrose", texte: "L'activité physique douce comme la marche ou la natation réduit les douleurs liées à l'arthrose et préserve la mobilité." },
   { icon: "🩸", categorie: "Maladies chroniques", titre: "Diabète", texte: "Contrôlez votre glycémie régulièrement. Une alimentation équilibrée et l'exercice physique sont vos meilleurs alliés contre le diabète." },
@@ -36,39 +39,63 @@ const tousLesConseils = [
   { icon: "🌸", categorie: "Maladies chroniques", titre: "Allergie", texte: "En cas d'allergie saisonnière, restez informé des pics polliniques et gardez vos antihistaminiques à portée." },
   { icon: "🌬️", categorie: "Maladies chroniques", titre: "Rhinite", texte: "La rhinite allergique chronique peut être soulagée par un rinçage nasal au sérum physiologique matin et soir." },
   { icon: "💥", categorie: "Maladies chroniques", titre: "Céphalée", texte: "Des maux de tête fréquents méritent une consultation. Ne vous habituez pas aux antalgiques sans avis médical." },
+  { icon: "🫀", categorie: "Maladies chroniques", titre: "Insuffisance cardiaque", texte: "Un essoufflement à l'effort ou des jambes gonflées peuvent signaler une insuffisance cardiaque. Consultez sans tarder." },
+  // Santé mentale (25)
   { icon: "😔", categorie: "Santé mentale", titre: "Dépression", texte: "La dépression est une vraie maladie, pas une faiblesse. Parlez-en à un médecin — des traitements efficaces existent." },
   { icon: "🔥", categorie: "Santé mentale", titre: "Burn-out", texte: "Si vous vous sentez épuisé au point de ne plus pouvoir travailler, c'est un signal d'alarme. Consultez avant d'atteindre la limite." },
+  { icon: "😶", categorie: "Santé mentale", titre: "Bore-out", texte: "L'ennui chronique au travail est aussi dangereux que le surmenage. Parlez à votre hiérarchie ou consultez un professionnel." },
+  { icon: "😞", categorie: "Santé mentale", titre: "Brown-out", texte: "Perdre le sens de son travail peut mener à une dépression. Identifiez ce qui vous motive profondément et cherchez de l'aide." },
   { icon: "😰", categorie: "Santé mentale", titre: "Anxiété", texte: "La respiration profonde (4 secondes inspiration, 4 rétention, 4 expiration) calme rapidement le système nerveux en cas d'anxiété." },
   { icon: "😨", categorie: "Santé mentale", titre: "Angoisse", texte: "Une crise d'angoisse est terrifiante mais pas dangereuse. Focalisez-vous sur votre respiration et un objet proche pour vous ancrer." },
   { icon: "😴", categorie: "Santé mentale", titre: "Insomnie", texte: "Évitez les écrans 1h avant le coucher. Un rituel régulier de sommeil (même heure chaque soir) améliore considérablement l'insomnie." },
+  { icon: "🍽️", categorie: "Santé mentale", titre: "Anorexie", texte: "L'anorexie est une maladie grave qui nécessite un suivi médical et psychologique. Ne sous-estimez pas les signaux d'alerte." },
   { icon: "😣", categorie: "Santé mentale", titre: "Boulimie", texte: "La boulimie n'est pas un manque de volonté. C'est un trouble qui se traite avec l'aide de spécialistes bienveillants." },
   { icon: "😱", categorie: "Santé mentale", titre: "Phobie", texte: "Les phobies peuvent être traitées efficacement par thérapie comportementale. N'évitez pas indéfiniment ce qui vous fait peur." },
+  { icon: "🏙️", categorie: "Santé mentale", titre: "Agoraphobie", texte: "La peur des espaces publics peut s'améliorer progressivement avec une thérapie d'exposition et un suivi psychologique." },
+  { icon: "📦", categorie: "Santé mentale", titre: "Claustrophobie", texte: "La claustrophobie affecte la qualité de vie. Des techniques de relaxation et la thérapie cognitive peuvent aider." },
   { icon: "🧩", categorie: "Santé mentale", titre: "Autisme", texte: "L'autisme est un spectre. Un diagnostic précoce permet une prise en charge adaptée qui améliore considérablement la qualité de vie." },
+  { icon: "🎭", categorie: "Santé mentale", titre: "Borderline", texte: "Le trouble de la personnalité borderline se traite avec une thérapie dialectique comportementale. Cherchez un spécialiste formé." },
   { icon: "📚", categorie: "Santé mentale", titre: "Dyslexie", texte: "La dyslexie n'est pas un manque d'intelligence. Un orthophoniste peut aider à développer des stratégies efficaces de lecture." },
+  { icon: "🎯", categorie: "Santé mentale", titre: "Dyspraxie", texte: "La dyspraxie affecte la coordination. Des séances de psychomotricité aident significativement les enfants et adultes concernés." },
   { icon: "💤", categorie: "Santé mentale", titre: "Narcolepsie", texte: "Des endormissements soudains incontrôlables sont le signe d'une narcolepsie. Consultez un spécialiste du sommeil." },
+  { icon: "🌙", categorie: "Santé mentale", titre: "Somnambulisme", texte: "Sécurisez l'environnement d'un somnambule (portes fermées, pas d'escalier libre). Consultez si les épisodes sont fréquents." },
   { icon: "⚡", categorie: "Santé mentale", titre: "Hypomanie", texte: "Une énergie inhabituelle, un besoin réduit de sommeil et des idées qui s'enchaînent peuvent signaler un épisode hypomaniaque." },
   { icon: "🩺", categorie: "Santé mentale", titre: "Hypocondrie", texte: "La peur excessive d'être malade peut être traitée. Un suivi psychologique réduit considérablement l'anxiété liée à la santé." },
+  { icon: "🍰", categorie: "Santé mentale", titre: "Hyperphagie", texte: "Manger compulsivement sans faim est un trouble alimentaire. Un suivi médical et psychologique est nécessaire pour s'en sortir." },
+  { icon: "🤐", categorie: "Santé mentale", titre: "Mutisme sélectif", texte: "Le mutisme sélectif chez l'enfant nécessite une intervention précoce d'un orthophoniste et d'un psychologue." },
   { icon: "🏫", categorie: "Santé mentale", titre: "Phobie scolaire", texte: "La phobie scolaire est un signal de détresse psychologique réel. Ne forcez pas l'enfant — consultez un professionnel rapidement." },
+  { icon: "😞", categorie: "Santé mentale", titre: "Dysthymie", texte: "Une tristesse chronique légère mais persistante depuis plus de 2 ans peut indiquer une dysthymie. Un traitement existe." },
+  { icon: "🏳️", categorie: "Santé mentale", titre: "Dysphorie de genre", texte: "La dysphorie de genre nécessite un accompagnement médical bienveillant. Des professionnels formés peuvent vous aider." },
+  // Nutrition & hygiène (10)
   { icon: "💧", categorie: "Nutrition & hygiène", titre: "Hydratation", texte: "En climat chaud comme au Cameroun, buvez au moins 2 litres d'eau potable par jour pour éviter la déshydratation." },
   { icon: "🥗", categorie: "Nutrition & hygiène", titre: "Alimentation équilibrée", texte: "Les légumes locaux (légumes-feuilles, plantain, haricots) apportent vitamines et minéraux essentiels à moindre coût." },
   { icon: "🍊", categorie: "Nutrition & hygiène", titre: "Vitamines", texte: "Privilégiez les fruits et légumes de saison pour un apport naturel en vitamines. Mangez varié plutôt que de vous supplémenter." },
   { icon: "🦷", categorie: "Nutrition & hygiène", titre: "Hygiène bucco-dentaire", texte: "Brossez vos dents 2 fois par jour pendant 2 minutes. Une bonne hygiène dentaire prévient les infections et maladies cardiovasculaires." },
   { icon: "🚿", categorie: "Nutrition & hygiène", titre: "Hygiène corporelle", texte: "Une douche quotidienne prévient les infections cutanées, surtout en saison chaude. Séchez bien les zones de plis." },
+  { icon: "☀️", categorie: "Nutrition & hygiène", titre: "Alimentation saison chaude", texte: "En période de chaleur, évitez les aliments lourds. Privilégiez les fruits, légumes et aliments légers faciles à digérer." },
   { icon: "⚖️", categorie: "Nutrition & hygiène", titre: "Obésité", texte: "L'obésité augmente le risque de diabète, d'hypertension et de maladies cardiaques. Un suivi médical et diététique aide à y remédier." },
   { icon: "🍚", categorie: "Nutrition & hygiène", titre: "Sous-nutrition", texte: "La sous-nutrition affaiblit l'immunité et ralentit la croissance chez l'enfant. Consultez un nutritionniste en cas de doute." },
+  { icon: "🕐", categorie: "Nutrition & hygiène", titre: "Jeûne", texte: "Le jeûne intermittent peut avoir des bénéfices mais n'est pas adapté à tout le monde. Consultez avant de commencer." },
   { icon: "🏃", categorie: "Nutrition & hygiène", titre: "Sport et santé", texte: "30 minutes d'activité physique par jour réduisent de 30% le risque de maladies cardiovasculaires et améliorent l'humeur." },
+  // Symptômes courants (11)
   { icon: "🤢", categorie: "Symptômes courants", titre: "Nausée", texte: "En cas de nausée, mangez léger et froid plutôt que chaud. Le gingembre en infusion est un remède naturel efficace." },
+  { icon: "🤮", categorie: "Symptômes courants", titre: "Vomissement", texte: "Après des vomissements, attendez 30 minutes avant de reboire, par petites gorgées. Évitez le lait et les aliments gras." },
   { icon: "🤕", categorie: "Symptômes courants", titre: "Maux de tête", texte: "Boire suffisamment d'eau, dormir et réduire le stress sont les premiers remèdes contre les maux de tête fréquents." },
   { icon: "😫", categorie: "Symptômes courants", titre: "Mal de gorge", texte: "Gargarisez-vous à l'eau salée tiède 3 fois par jour. Si la douleur est intense avec fièvre, consultez un médecin." },
   { icon: "😩", categorie: "Symptômes courants", titre: "Fatigue", texte: "Une fatigue persistante malgré un bon sommeil peut signaler une anémie, une infection ou un trouble thyroïdien. Consultez." },
+  { icon: "😪", categorie: "Symptômes courants", titre: "Asthénie", texte: "L'asthénie profonde qui empêche toute activité doit être explorée médicalement. Elle peut avoir des causes multiples." },
   { icon: "🤧", categorie: "Symptômes courants", titre: "Nez bouché", texte: "Un spray nasal salin ou de la vapeur d'eau chaude aide à dégager le nez. Évitez les décongestionnants plus de 3 jours." },
+  { icon: "🤜", categorie: "Symptômes courants", titre: "Mal de ventre", texte: "Un mal de ventre localisé à droite en bas peut indiquer une appendicite. Consultez rapidement sans prendre d'antalgiques d'abord." },
+  { icon: "😖", categorie: "Symptômes courants", titre: "Colique", texte: "Les coliques du nourrisson sont bénignes mais douloureuses. Des massages doux du ventre et le portage peuvent soulager bébé." },
   { icon: "😣", categorie: "Symptômes courants", titre: "Constipation", texte: "Augmentez votre consommation de fibres (fruits, légumes, céréales) et buvez davantage d'eau pour combattre la constipation." },
-  { icon: "💔", categorie: "Symptômes courants", titre: "Douleur thoracique", texte: "Toute douleur thoracique intense et soudaine est une urgence médicale. Appelez le 15 ou rendez-vous aux urgences immédiatement." },
+  { icon: "💔", categorie: "Symptômes courants", titre: "Douleur thoracique", texte: "Toute douleur thoracique intense et soudaine est une urgence médicale. Rendez-vous aux urgences immédiatement." },
+  // Prévention & vaccins (9)
   { icon: "💉", categorie: "Prévention & vaccins", titre: "Vaccins obligatoires Cameroun", texte: "BCG, polio, hépatite B, rougeole — ces vaccins protègent vos enfants dès la naissance. Tenez le carnet vaccinal à jour." },
   { icon: "🦟", categorie: "Prévention & vaccins", titre: "Prévention paludisme", texte: "Moustiquaire imprégnée, répulsifs et élimination des eaux stagnantes sont les trois piliers de la prévention du paludisme." },
   { icon: "🧼", categorie: "Prévention & vaccins", titre: "Lavage des mains", texte: "Lavez-vous les mains à l'eau et au savon 20 secondes avant de manger et après les toilettes. Simple mais redoutablement efficace." },
   { icon: "💧", categorie: "Prévention & vaccins", titre: "Eau potable", texte: "Faites bouillir l'eau du robinet si vous n'êtes pas sûr de sa qualité. L'eau contaminée est une cause majeure de maladies au Cameroun." },
   { icon: "🛏️", categorie: "Prévention & vaccins", titre: "Moustiquaires", texte: "Dormez chaque nuit sous une moustiquaire imprégnée d'insecticide, même en saison sèche. C'est votre meilleure protection." },
+  { icon: "🍖", categorie: "Prévention & vaccins", titre: "Hygiène alimentaire", texte: "Lavez les fruits et légumes avant consommation. Cuisez bien les viandes et évitez les aliments vendus à même le sol." },
   { icon: "🚬", categorie: "Prévention & vaccins", titre: "Tabac", texte: "Le tabac est la première cause de cancer évitable. Arrêter fumer à tout âge réduit immédiatement le risque cardiovasculaire." },
   { icon: "🍺", categorie: "Prévention & vaccins", titre: "Alcoolisme", texte: "Une consommation excessive d'alcool détruit le foie, le cerveau et les relations sociales. Des aides médicales existent pour arrêter." },
   { icon: "☀️", categorie: "Prévention & vaccins", titre: "Soleil", texte: "Évitez l'exposition au soleil entre 12h et 15h. Une exposition prolongée sans protection peut causer des coups de chaleur dangereux." },
@@ -81,7 +108,8 @@ const specialites = [
   "Oncologue", "Interniste", "Urologue", "Radiologue", "Médecin de Santé Publique",
   "Rhumatologue", "Gériatre", "Médecin du Sport", "Infectiologue", "Hématologue",
   "Allergologue", "Gastro-Entérologue Pédiatrique", "Médecin Nutritionniste",
-  "Médecin Rééducateur", "Médecin du Travail",
+  "Médecin Rééducateur", "Médecin du Travail", "Addictologue",
+  "Médecin Esthétique", "Sexologue", "Anesthésiste-Réanimateur",
 ];
 
 const fonctionnalites = [
@@ -99,7 +127,6 @@ const medecins = [
   { nom: "Dr. Fotso Jean", specialite: "Cardiologue", ville: "Yaoundé", statut: "Disponible", creneaux: ["11h00", "14h30", "16h00"] },
 ];
 
-// Top 3 mois précédent pour "En vedette"
 const vedette = [
   { nom: "Dr. Abena Marie", hopital: "Hôpital Central Yaoundé", specialite: "Pédiatre", note: 4.9, consultations: 312, emoji: "👩‍⚕️" },
   { nom: "Dr. Fotso Jean", hopital: "Clinique La Grâce Douala", specialite: "Cardiologue", note: 4.8, consultations: 287, emoji: "👨‍⚕️" },
@@ -124,7 +151,7 @@ function getGroupeActif(conseils) {
   return { groupe: melanges.slice(groupeIndex * 5, groupeIndex * 5 + 5) };
 }
 
-export default function Landing() {
+export default function Landing({ hideNavbar = false }) {
   const navigate = useNavigate();
   const [indexMedecin, setIndexMedecin] = useState(0);
   const [{ groupe }, setGroupeData] = useState(() => getGroupeActif(tousLesConseils));
@@ -132,16 +159,35 @@ export default function Landing() {
   const [ongletSidebar, setOngletSidebar] = useState("nouveautes");
   const [symptomes, setSymptomes] = useState("");
   const [recherche, setRecherche] = useState("");
-
   const [analyseResult, setAnalyseResult] = useState(null);
   const [analysing, setAnalysing] = useState(false);
+  const token = localStorage.getItem("token");
+  let user = {};
+  try {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser && storedUser !== "undefined" && storedUser !== "null") {
+      user = JSON.parse(storedUser);
+    }
+  } catch (e) {
+    console.error("Error parsing user from localStorage:", e);
+  }
+  const isConnected = !!token && token !== "undefined" && token !== "null" && !!user && (user.role === "patient" || user.role === "doctor" || user.role === "admin");
+  const isPatient = isConnected && user.role === "patient";
+  const isDoctor = isConnected && user.role === "doctor";
+
+  const handleSearchOrRdvRedirect = () => {
+    if (isPatient) {
+      navigate('/home?tab=search');
+    } else if (isDoctor) {
+      navigate('/doctor/dashboard');
+    } else {
+      navigate('/login');
+    }
+  };
 
   const handleAnalyze = async (e) => {
     e.preventDefault();
-    if (!symptomes.trim()) {
-      alert("Veuillez décrire vos symptômes.");
-      return;
-    }
+    if (!symptomes.trim()) { alert("Veuillez décrire vos symptômes."); return; }
     setAnalysing(true);
     try {
       const { data } = await axios.post("http://localhost:5000/api/ai/symptoms", { symptoms: symptomes });
@@ -181,17 +227,17 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-white font-sans">
-      <Navbar />
+      {!hideNavbar && <Navbar />}
 
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <section className="pt-24 pb-16 bg-gradient-to-br from-green-50 via-white to-emerald-50 relative overflow-hidden">
+      <section className={`${hideNavbar ? 'pt-4' : 'pt-[88px] xl:pt-20'} pb-16 bg-gradient-to-br from-green-50 via-white to-emerald-50 relative overflow-hidden`}>
         <div className="absolute top-0 right-0 w-96 h-96 bg-green-100 rounded-full opacity-40 translate-x-32 -translate-y-32" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-100 rounded-full opacity-30 -translate-x-20 translate-y-20" />
 
         <div className="max-w-6xl mx-auto px-4 relative">
           <div className="flex flex-col lg:flex-row items-start gap-10">
 
-            {/* Gauche : slogan + IA */}
+            {/* Gauche */}
             <div className="flex-1 flex flex-col items-center text-center">
               <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight mb-4">
                 Votre santé,{" "}
@@ -202,7 +248,7 @@ export default function Landing() {
               </p>
 
               {/* Barre de recherche */}
-              <form onSubmit={(e) => { e.preventDefault(); navigate('/login'); }} className="flex gap-2 mb-6 w-full max-w-lg">
+              <form onSubmit={(e) => { e.preventDefault(); handleSearchOrRdvRedirect(); }} className="flex gap-2 mb-6 w-full max-w-lg">
                 <input
                   type="text"
                   value={recherche}
@@ -215,7 +261,7 @@ export default function Landing() {
                 </button>
               </form>
 
-              {/* Zone IA symptômes */}
+              {/* Zone IA */}
               <form onSubmit={handleAnalyze} className="bg-white rounded-2xl shadow-md border border-green-100 p-5 w-full max-w-lg">
                 <div className="flex items-center justify-center gap-2 mb-3">
                   <span className="text-xl">🤖</span>
@@ -230,13 +276,11 @@ export default function Landing() {
                 <button type="submit" disabled={analysing} className="w-full mt-3 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition-colors disabled:opacity-50">
                   {analysing ? "Analyse en cours..." : "Analyser mes symptômes"}
                 </button>
-                <p className="text-xs text-gray-400 text-center mt-2">
-                  Notre assistant IA vous oriente vers le bon spécialiste
-                </p>
+                <p className="text-xs text-gray-400 text-center mt-2">Notre assistant IA vous oriente vers le bon spécialiste</p>
               </form>
 
               <div className="flex gap-8 mt-6 justify-center">
-                {[{ chiffre: "28", label: "Spécialités" }, { chiffre: "3", label: "Types de consultation" }, { chiffre: "24/7", label: "Disponible" }].map((s) => (
+                {[{ chiffre: "32", label: "Spécialités" }, { chiffre: "3", label: "Types de consultation" }, { chiffre: "24/7", label: "Disponible" }].map((s) => (
                   <div key={s.label} className="text-center">
                     <div className="text-2xl font-extrabold text-green-600">{s.chiffre}</div>
                     <div className="text-xs text-gray-500 font-medium">{s.label}</div>
@@ -245,10 +289,8 @@ export default function Landing() {
               </div>
             </div>
 
-            {/* Droite : carte médecin + sidebar */}
+            {/* Droite */}
             <div className="w-full lg:w-96 flex flex-col gap-4 lg:ml-auto">
-
-              {/* Carte médecin */}
               <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-2xl">👨‍⚕️</div>
@@ -264,28 +306,23 @@ export default function Landing() {
                     <span key={c} className="text-sm border border-gray-200 rounded-lg px-3 py-1 text-gray-700">{c}</span>
                   ))}
                 </div>
-                <button onClick={() => navigate('/login')} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition-colors">
+                <button onClick={() => navigate(isConnected ? '/home?tab=search' : '/login')} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition-colors">
                   Prendre rendez-vous
                 </button>
               </div>
 
-              {/* Sidebar Nouveautés / En vedette */}
+              {/* Nouveautés / En vedette */}
               <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
                 <div className="flex border-b border-gray-100">
-                  <button
-                    onClick={() => setOngletSidebar("nouveautes")}
-                    className={`flex-1 py-3 text-sm font-bold transition-colors ${ongletSidebar === "nouveautes" ? "text-green-600 border-b-2 border-green-600" : "text-gray-400 hover:text-gray-600"}`}
-                  >
+                  <button onClick={() => setOngletSidebar("nouveautes")}
+                    className={`flex-1 py-3 text-sm font-bold transition-colors ${ongletSidebar === "nouveautes" ? "text-green-600 border-b-2 border-green-600" : "text-gray-400 hover:text-gray-600"}`}>
                     🔔 Nouveautés
                   </button>
-                  <button
-                    onClick={() => setOngletSidebar("vedette")}
-                    className={`flex-1 py-3 text-sm font-bold transition-colors ${ongletSidebar === "vedette" ? "text-green-600 border-b-2 border-green-600" : "text-gray-400 hover:text-gray-600"}`}
-                  >
+                  <button onClick={() => setOngletSidebar("vedette")}
+                    className={`flex-1 py-3 text-sm font-bold transition-colors ${ongletSidebar === "vedette" ? "text-green-600 border-b-2 border-green-600" : "text-gray-400 hover:text-gray-600"}`}>
                     ⭐ En vedette
                   </button>
                 </div>
-
                 <div className="p-4">
                   {ongletSidebar === "nouveautes" ? (
                     <div className="space-y-3">
@@ -294,18 +331,14 @@ export default function Landing() {
                           <span className="text-lg">🏆</span>
                           <span className="font-bold text-green-700 text-sm">Classement MediCam — Mai 2026</span>
                         </div>
-                        <p className="text-xs text-gray-600 leading-relaxed">
-                          MediCam lance son premier classement mensuel ! Les 3 premiers de chaque catégorie reçoivent un badge d'excellence visible sur leur profil.
-                        </p>
+                        <p className="text-xs text-gray-600 leading-relaxed">MediCam lance son premier classement mensuel ! Les 3 premiers de chaque catégorie reçoivent un badge d'excellence visible sur leur profil.</p>
                       </div>
                       <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
                         <div className="flex items-center gap-2 mb-2">
                           <span className="text-lg">🎁</span>
                           <span className="font-bold text-yellow-700 text-sm">Primes aux meilleurs médecins</span>
                         </div>
-                        <p className="text-xs text-gray-600 leading-relaxed">
-                          N°1 → <strong>50 000 FCFA</strong> · N°2 → <strong>30 000 FCFA</strong> · N°3 → <strong>20 000 FCFA</strong>
-                        </p>
+                        <p className="text-xs text-gray-600 leading-relaxed">N°1 → <strong>50 000 FCFA</strong> · N°2 → <strong>30 000 FCFA</strong> · N°3 → <strong>20 000 FCFA</strong></p>
                       </div>
                     </div>
                   ) : (
@@ -313,21 +346,19 @@ export default function Landing() {
                       <p className="text-xs text-gray-400 mb-3 font-medium">🏅 Top 3 — Avril 2026</p>
                       <div className="space-y-3">
                         {vedette.map((doc, i) => {
-                          const tailles = [
-                            { photo: "w-14 h-14 text-2xl", nom: "text-base font-extrabold", hopital: "text-xs", note: "text-base font-extrabold", bg: "bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-300" },
-                            { photo: "w-11 h-11 text-xl", nom: "text-sm font-bold", hopital: "text-xs", note: "text-sm font-bold", bg: "bg-gray-50 border-gray-200" },
-                            { photo: "w-9 h-9 text-lg", nom: "text-xs font-bold", hopital: "text-xs", note: "text-xs font-bold", bg: "bg-orange-50 border-orange-200" },
+                          const styles = [
+                            { photo: "w-14 h-14 text-2xl", nom: "text-base font-extrabold", bg: "bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-300" },
+                            { photo: "w-11 h-11 text-xl", nom: "text-sm font-bold", bg: "bg-gray-50 border-gray-200" },
+                            { photo: "w-9 h-9 text-lg", nom: "text-xs font-bold", bg: "bg-orange-50 border-orange-200" },
                           ][i];
                           const medailles = ["🥇", "🥈", "🥉"];
                           return (
-                            <div key={doc.nom} className={`flex items-center gap-3 border rounded-xl p-3 ${tailles.bg}`}>
-                              <div className={`${tailles.photo} bg-white rounded-full flex items-center justify-center border-2 border-gray-200 flex-shrink-0`}>
-                                {doc.emoji}
-                              </div>
+                            <div key={doc.nom} className={`flex items-center gap-3 border rounded-xl p-3 ${styles.bg}`}>
+                              <div className={`${styles.photo} bg-white rounded-full flex items-center justify-center border-2 border-gray-200 flex-shrink-0`}>{doc.emoji}</div>
                               <div className="flex-1 min-w-0">
-                                <div className={`${tailles.nom} text-gray-800 truncate`}>{doc.nom}</div>
-                                <div className={`${tailles.hopital} text-gray-500 truncate`}>{doc.hopital}</div>
-                                <div className={`${tailles.note} text-yellow-500`}>⭐ {doc.note}</div>
+                                <div className={`${styles.nom} text-gray-800 truncate`}>{doc.nom}</div>
+                                <div className="text-xs text-gray-500 truncate">{doc.hopital}</div>
+                                <div className="text-xs font-bold text-yellow-500">⭐ {doc.note}</div>
                               </div>
                               <span className="text-xl flex-shrink-0">{medailles[i]}</span>
                             </div>
@@ -349,8 +380,7 @@ export default function Landing() {
           <div className="text-center mb-10">
             <span className="text-green-600 font-bold text-sm uppercase tracking-widest">Santé au quotidien</span>
             <h2 className="text-3xl font-extrabold text-gray-900 mt-2">Conseils santé</h2>
-            <p className="text-gray-500 mt-2">
-              Des conseils adaptés au contexte camerounais —{" "}
+            <p className="text-gray-500 mt-2">Des conseils adaptés au contexte camerounais —{" "}
               <Link to="/conseils" className="text-green-600 font-semibold hover:underline">Voir tous les conseils →</Link>
             </p>
           </div>
@@ -393,13 +423,29 @@ export default function Landing() {
             <p className="text-gray-500 mt-2">Une plateforme complète pour prendre soin de votre santé</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {fonctionnalites.map((f) => (
-              <div key={f.titre} className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md border border-gray-100 hover:border-green-200 transition-all group">
-                <div className="text-3xl mb-4">{f.icon}</div>
-                <h3 className="text-base font-bold text-gray-800 mb-2 group-hover:text-green-600 transition-colors">{f.titre}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{f.texte}</p>
-              </div>
-            ))}
+            {fonctionnalites.map((f) => {
+              const isMapCard = f.titre === 'Carte des soins';
+              return isMapCard ? (
+                <div
+                  key={f.titre}
+                  onClick={() => navigate('/map')}
+                  className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg border border-gray-100 hover:border-green-400 transition-all group cursor-pointer relative overflow-hidden"
+                >
+                  <div className="absolute top-3 right-3 text-[10px] font-bold text-green-600 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full">
+                    Découvrir →
+                  </div>
+                  <div className="text-3xl mb-4">{f.icon}</div>
+                  <h3 className="text-base font-bold text-gray-800 mb-2 group-hover:text-green-600 transition-colors">{f.titre}</h3>
+                  <p className="text-sm text-gray-500 leading-relaxed">{f.texte}</p>
+                </div>
+              ) : (
+                <div key={f.titre} className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md border border-gray-100 hover:border-green-200 transition-all group">
+                  <div className="text-3xl mb-4">{f.icon}</div>
+                  <h3 className="text-base font-bold text-gray-800 mb-2 group-hover:text-green-600 transition-colors">{f.titre}</h3>
+                  <p className="text-sm text-gray-500 leading-relaxed">{f.texte}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -409,7 +455,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
             <span className="text-green-600 font-bold text-sm uppercase tracking-widest">Nos médecins</span>
-            <h2 className="text-3xl font-extrabold text-gray-900 mt-2">28 spécialités disponibles</h2>
+            <h2 className="text-3xl font-extrabold text-gray-900 mt-2">32 spécialités disponibles</h2>
             <p className="text-gray-500 mt-2">Des médecins qualifiés dans toutes les disciplines médicales</p>
           </div>
           <div className="flex flex-wrap gap-3 justify-center">
@@ -420,17 +466,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── CTA ──────────────────────────────────────────────────────────── */}
-      <section className="py-20 bg-gradient-to-r from-green-600 to-emerald-600">
-        <div className="max-w-3xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-extrabold text-white mb-4">Prêt à prendre soin de votre santé ?</h2>
-          <p className="text-green-100 mb-8 text-lg">Rejoignez MediCam et consultez un médecin dès aujourd'hui, où que vous soyez au Cameroun.</p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/register" className="px-8 py-3 bg-white text-green-700 font-bold rounded-lg hover:bg-green-50 transition-colors shadow-lg">Créer un compte patient</Link>
-            <Link to="/register" className="px-8 py-3 border-2 border-white text-white font-bold rounded-lg hover:bg-white/10 transition-colors">Rejoindre en tant que médecin</Link>
-          </div>
-        </div>
-      </section>
 
       {/* ── FOOTER ───────────────────────────────────────────────────────── */}
       <footer className="bg-gray-900 text-gray-400 py-10">
@@ -439,9 +474,7 @@ export default function Landing() {
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2" /></svg>
                 </div>
                 <span className="text-white font-bold text-lg">MediCam</span>
               </div>
@@ -470,7 +503,7 @@ export default function Landing() {
         </div>
       </footer>
 
-      {/* ============ MODAL Orientation Symptômes ============ */}
+      {/* ── MODAL Analyse IA ─────────────────────────────────────────────── */}
       {analyseResult && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full space-y-4">
@@ -481,52 +514,25 @@ export default function Landing() {
               </div>
               <button onClick={() => setAnalyseResult(null)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
             </div>
-            
             <div className="space-y-3">
               <div className="flex justify-between items-center bg-gray-50 p-3 rounded-xl border">
                 <span className="text-sm font-semibold text-gray-500">Spécialiste recommandé</span>
-                <span className="text-sm font-bold text-green-700 bg-green-50 px-3 py-1 rounded-full border border-green-200">
-                  {analyseResult.specialty}
-                </span>
+                <span className="text-sm font-bold text-green-700 bg-green-50 px-3 py-1 rounded-full border border-green-200">{analyseResult.specialty}</span>
               </div>
-
               <div className="flex justify-between items-center bg-gray-50 p-3 rounded-xl border">
                 <span className="text-sm font-semibold text-gray-500">Niveau d'urgence</span>
                 <span className={`text-xs font-bold px-3 py-1 rounded-full border ${
-                  analyseResult.urgency_level === 'emergency' 
-                    ? 'bg-red-50 text-red-700 border-red-200' 
-                    : analyseResult.urgency_level === 'high'
-                    ? 'bg-yellow-50 text-yellow-700 border-yellow-200'
-                    : 'bg-blue-50 text-blue-700 border-blue-200'
-                }`}>
-                  {analyseResult.urgency_label || (analyseResult.urgency_level === 'emergency' ? 'Urgence Vitale' : 'Normal')}
-                </span>
+                  analyseResult.urgency_level === 'emergency' ? 'bg-red-50 text-red-700 border-red-200' :
+                  analyseResult.urgency_level === 'high' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
+                  'bg-blue-50 text-blue-700 border-blue-200'
+                }`}>{analyseResult.urgency_label || (analyseResult.urgency_level === 'emergency' ? 'Urgence Vitale' : 'Normal')}</span>
               </div>
-
-              <div className="bg-gray-50 border border-gray-150 rounded-xl p-4 text-sm text-gray-700 leading-relaxed font-light">
-                {analyseResult.message}
-              </div>
-
-              <p className="text-[11px] text-gray-400 italic bg-amber-50/50 border border-amber-100 rounded-xl p-3">
-                ⚠️ {analyseResult.disclaimer}
-              </p>
+              <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm text-gray-700 leading-relaxed">{analyseResult.message}</div>
+              <p className="text-[11px] text-gray-400 italic bg-amber-50 border border-amber-100 rounded-xl p-3">⚠️ {analyseResult.disclaimer}</p>
             </div>
-
             <div className="flex gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => setAnalyseResult(null)}
-                className="flex-1 border border-gray-200 text-gray-600 font-semibold py-2.5 rounded-xl hover:bg-gray-50 transition-colors"
-              >
-                Fermer
-              </button>
-              <button
-                type="button"
-                onClick={() => { setAnalyseResult(null); navigate('/login'); }}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 rounded-xl transition-colors shadow-md text-center"
-              >
-                Prendre RDV 📅
-              </button>
+              <button onClick={() => setAnalyseResult(null)} className="flex-1 border border-gray-200 text-gray-600 font-semibold py-2.5 rounded-xl hover:bg-gray-50 transition-colors">Fermer</button>
+              <button onClick={() => { setAnalyseResult(null); handleSearchOrRdvRedirect(); }} className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 rounded-xl transition-colors shadow-md">Prendre RDV 📅</button>
             </div>
           </div>
         </div>

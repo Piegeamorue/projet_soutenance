@@ -5,18 +5,15 @@ import { getStoredUser, uploadProfilePhoto } from '../utils/profilePhoto'
 import { SIDEBAR_TOP, SIDEBAR_HEIGHT } from '../utils/layout'
 
 const menuItems = [
-  { icon: '🏠', label: 'Accueil', tab: 'accueil' },
-  { icon: '👨‍⚕️', label: 'Médecins', tab: 'search' },
-  { icon: '📅', label: 'Rendez-vous', tab: 'appointments' },
-  { icon: '💬', label: 'Consultations', tab: 'consultations' },
-  { icon: '📋', label: 'Ordonnances', tab: 'prescriptions' },
-  { icon: '📊', label: 'Suivi santé', tab: 'health' },
-  { icon: '🗺️', label: 'Carte des soins', tab: 'map' },
-  { icon: '🌐', label: 'Accueil public', tab: 'public' },
+  { icon: '🏠', label: 'Accueil / Dashboard', tab: 'dashboard' },
+  { icon: '📅', label: 'Mon agenda', tab: 'appointments' },
+  { icon: '💬', label: 'Mes consultations', tab: 'consultations' },
+  { icon: '👥', label: 'Mes patients suivis', tab: 'patients' },
+  { icon: '📋', label: 'Ordonnances émises', tab: 'prescriptions' },
   { icon: '⚙️', label: 'Paramètres du compte', tab: 'settings' },
 ]
 
-export default function PatientSidebar({ activeTab }) {
+export default function DoctorSidebar({ activeTab }) {
   const [user, setUser] = useState(getStoredUser)
   const [uploading, setUploading] = useState(false)
   const fileRef = useRef(null)
@@ -31,18 +28,6 @@ export default function PatientSidebar({ activeTab }) {
   const handleLogout = () => {
     localStorage.clear()
     navigate('/')
-  }
-
-  const handleNav = (item) => {
-    if (item.tab === 'public') {
-      navigate('/')
-      return
-    }
-    if (item.tab === 'map') {
-      navigate('/map')
-      return
-    }
-    navigate(`/home?tab=${item.tab}`)
   }
 
   const handlePhotoChange = async (e) => {
@@ -66,7 +51,11 @@ export default function PatientSidebar({ activeTab }) {
     <div className={`fixed left-0 w-64 z-40 flex flex-col ${SIDEBAR_TOP} ${SIDEBAR_HEIGHT}`}>
       <div className="bg-green-600 px-4 pt-4 pb-6 flex flex-col items-center flex-shrink-0">
         <div className="relative mb-3">
-          <Avatar user={user} size="xl" className="border-4 border-white shadow-md" />
+          <Avatar
+            user={user}
+            size="xl"
+            className="border-4 border-white shadow-md"
+          />
           <button
             type="button"
             onClick={() => fileRef.current?.click()}
@@ -78,8 +67,10 @@ export default function PatientSidebar({ activeTab }) {
           </button>
           <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
         </div>
-        <h3 className="text-white font-extrabold text-base text-center leading-tight">{user.full_name}</h3>
-        <p className="text-green-100 text-xs mt-1">Patient</p>
+        <h3 className="text-white font-extrabold text-base text-center leading-tight">
+          Dr. {user.full_name || 'Médecin'}
+        </h3>
+        <p className="text-green-100 text-xs mt-1">{user.specialty || 'Médecin'}</p>
       </div>
 
       <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-1 bg-white border-r border-gray-100 shadow-xl">
@@ -87,7 +78,7 @@ export default function PatientSidebar({ activeTab }) {
           <button
             key={item.label}
             type="button"
-            onClick={() => handleNav(item)}
+            onClick={() => navigate(`/doctor/dashboard?tab=${item.tab}`)}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all text-sm font-medium
               ${activeTab === item.tab
                 ? 'bg-green-600 text-white shadow-md'

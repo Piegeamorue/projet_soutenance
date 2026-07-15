@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { formatDoctorName } from "../../utils/formatDoctor";
 
 const API = 'http://localhost:5000/api';
 
@@ -10,6 +11,7 @@ export default function AdminPanel() {
   const [doctors, setDoctors] = useState([]);
   const [users, setUsers] = useState([]);
   const [consultations, setConsultations] = useState([]);
+  const [changeRequests, setChangeRequests] = useState([]);
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalDoctors: 0,
@@ -78,6 +80,9 @@ export default function AdminPanel() {
       } else if (activeTab === "suspended") {
         const res = await axios.get(`${API}/admin/users`, { headers });
         setUsers(res.data.filter(u => u.status === 'suspended'));
+      } else if (activeTab === "requests") {
+        const res = await axios.get(`${API}/admin/change-requests`, { headers });
+        setChangeRequests(res.data);
       }
     } catch (err) {
       console.error(err);
@@ -123,12 +128,33 @@ export default function AdminPanel() {
     }
   };
 
+  const handleApproveRequest = async (id) => {
+    try {
+      await axios.patch(`${API}/admin/change-requests/${id}/approve`, {}, { headers });
+      setChangeRequests((r) => r.filter((x) => x.id !== id));
+      showNotif("Demande approuvée ✅");
+    } catch (err) {
+      showNotif(err.response?.data?.message || "Erreur", "error");
+    }
+  };
+
+  const handleRejectRequest = async (id) => {
+    try {
+      await axios.patch(`${API}/admin/change-requests/${id}/reject`, { reason: "Refus administrateur" }, { headers });
+      setChangeRequests((r) => r.filter((x) => x.id !== id));
+      showNotif("Demande refusée", "error");
+    } catch (err) {
+      showNotif("Erreur", "error");
+    }
+  };
+
   const tabs = [
     { id: "approvals", label: "Approbations", icon: "🩺", count: activeTab === "approvals" ? doctors.length : null },
     { id: "users", label: "Utilisateurs", icon: "👥", count: null },
     { id: "consultations", label: "Consultations", icon: "📋", count: null },
     { id: "stats", label: "Statistiques", icon: "📊", count: null },
     { id: "suspended", label: "Suspensions", icon: "🔐", count: null },
+    { id: "requests", label: "Demandes profil", icon: "📝", count: activeTab === "requests" ? changeRequests.length : null },
   ];
 
   return (
@@ -412,7 +438,7 @@ export default function AdminPanel() {
                     {consultations.map((c) => (
                       <tr key={c.id} className="hover:bg-gray-50 transition-colors">
                         <td className="px-6 py-4 text-sm font-medium text-gray-800">{c.patient_name}</td>
-                        <td className="px-6 py-4 text-sm text-gray-600">Dr. {c.doctor_name}</td>
+                        <td className="px-6 py-4 text-sm text-gray-600">{formatDoctorName(c.doctor_name)}</td>
                         <td className="px-6 py-4">
                           <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-blue-50 text-blue-700">{c.type}</span>
                         </td>
@@ -546,6 +572,36 @@ export default function AdminPanel() {
                             Réactiver le compte
                           </button>
                         </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === "requests" && !loading && (
+            <div>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-gray-800">Demandes de modification (médecins)</h2>
+                <p className="text-gray-500 mt-1">{changeRequests.length} demande(s) en attente</p>
+              </div>
+              {changeRequests.length === 0 ? (
+                <div className="bg-white rounded-2xl shadow-sm p-16 text-center">
+                  <p className="text-gray-500">Aucune demande en attente</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {changeRequests.map((req) => (
+                    <div key={req.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-wrap justify-between gap-4">
+                      <div>
+                        <h3 className="font-bold text-gray-800">{req.full_name}</h3>
+                        <p className="text-sm text-gray-500">{req.current_email}</p>
+                        <p className="text-sm mt-2"><b>{req.request_type}</b> : {req.old_value || '—'} → {req.new_value}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => handleApproveRequest(req.id)} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm font-semibold">Approuver</button>
+                        <button onClick={() => handleRejectRequest(req.id)} className="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-xl text-sm font-semibold">Refuser</button>
                       </div>
                     </div>
                   ))}

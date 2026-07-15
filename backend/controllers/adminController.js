@@ -154,6 +154,106 @@ const getAllConsultations = async (req, res) => {
   }
 }
 
+// ✅ Demandes de modification profil médecin
+const getPendingChangeRequests = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT r.*, u.full_name, u.email AS current_email
+       FROM profile_change_requests r
+       JOIN users u ON r.user_id = u.id
+       WHERE r.status = 'pending'
+       ORDER BY r.created_at ASC`
+    )
+    res.json(result.rows)
+  } catch (error) {
+    if (error.code === '42P01') {
+      return res.json([])
+    }
+    res.status(500).json({ message: 'Erreur serveur' })
+  }
+}
+
+const approveChangeRequest = async (req, res) => {
+  const { id } = req.params
+  try {
+    const request = await pool.query(
+      `SELECT * FROM profile_change_requests WHERE id = $1 AND status = 'pending'`,
+      [id]
+    )
+    if (request.rows.length === 0) {
+      return res.status(404).json({ message: 'Demande introuvable' })
+    }
+
+    const row = request.rows[0]
+
+    if (row.request_type === 'email') {
+      const existing = await pool.query('SELECT id FROM users WHERE email = $1', [row.new_value])
+      if (existing.rows.length > 0) {
+        return res.status(400).json({ message: 'Cet email est déjà utilisé' })
+      }
+      await pool.query('UPDATE users SET email = $1 WHERE id = $2', [row.new_value, row.user_id])
+    } else if (row.request_type === 'workplace') {
+      await pool.query('UPDATE doctors SET workplace = $1 WHERE user_id = $2', [row.new_value, row.user_id])
+    } else if (row.request_type === 'specialty') {
+      await pool.query('UPDATE doctors SET specialty = $1 WHERE user_id = $2', [row.new_value, row.user_id])
+    }
+
+    await pool.query(
+      `UPDATE profile_change_requests SET status = 'approved' WHERE id = $1`,
+      [id]
+    )
+
+    const user = await pool.query('SELECT email, full_name FROM users WHERE id = $1', [row.user_id])
+    if (user.rows.length > 0) {
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: user.rows[0].email,
+        subject: 'MediCam — Demande approuvée',
+        html: `<p>Bonjour Dr. ${user.rows[0].full_name},</p>
+               <p>Votre demande de modification (<b>${row.request_type}</b>) a été approuvée.</p>`
+      })
+    }
+
+    res.json({ message: '✅ Demande approuvée' })
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: 'Erreur serveur' })
+  }
+}
+
+const rejectChangeRequest = async (req, res) => {
+  const { id } = req.params
+  const { reason } = req.body
+  try {
+    const request = await pool.query(
+      `UPDATE profile_change_requests SET status = 'rejected'
+       WHERE id = $1 AND status = 'pending'
+       RETURNING *`,
+      [id]
+    )
+    if (request.rows.length === 0) {
+      return res.status(404).json({ message: 'Demande introuvable' })
+    }
+
+    const row = request.rows[0]
+    const user = await pool.query('SELECT email, full_name FROM users WHERE id = $1', [row.user_id])
+    if (user.rows.length > 0) {
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: user.rows[0].email,
+        subject: 'MediCam — Demande refusée',
+        html: `<p>Bonjour Dr. ${user.rows[0].full_name},</p>
+               <p>Votre demande de modification (<b>${row.request_type}</b>) a été refusée.</p>
+               ${reason ? `<p>Raison : ${reason}</p>` : ''}`
+      })
+    }
+
+    res.json({ message: 'Demande refusée' })
+  } catch (error) {
+    res.status(500).json({ message: 'Erreur serveur' })
+  }
+}
+
 module.exports = {
   getPendingDoctors,
   approveDoctor,
@@ -161,5 +261,8 @@ module.exports = {
   getAllUsers,
   suspendUser,
   getStats,
-  getAllConsultations
+  getAllConsultations,
+  getPendingChangeRequests,
+  approveChangeRequest,
+  rejectChangeRequest
 }

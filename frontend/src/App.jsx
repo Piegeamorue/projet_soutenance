@@ -5,6 +5,7 @@ import ForgotPassword from './pages/auth/ForgotPassword'
 import ResetPassword from './pages/auth/ResetPassword'
 import RecoverAccount from './pages/auth/RecoverAccount'
 import AdminPanel from './pages/admin/AdminPanel.jsx'
+import ConfirmEmailChange from './pages/auth/ConfirmEmailChange'
 import Landing from "./pages/Landing";
 import Chat from './pages/consultation/Chat'
 import Home from './pages/patient/Home'
@@ -13,6 +14,7 @@ import DoctorProfile from './pages/patient/DoctorProfile'
 import DoctorDashboard from './pages/doctor/DoctorDashboard'
 import VerifyPrescription from './pages/VerifyPrescription'
 import InfoPage from './pages/InfoPage'
+import MapPage from './pages/patient/MapPage'
 
 function App() {
   return (
@@ -23,15 +25,17 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/recover-account" element={<RecoverAccount />} />
+        <Route path="/confirm-email-change" element={<ConfirmEmailChange />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/consultation/:consultationId/chat" element={<Chat />} />
-        <Route path="/doctor/:id" element={<DoctorProfile />} />
         <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+        <Route path="/doctor/:id" element={<DoctorProfile />} />
         <Route path="/verify-prescription/:token" element={<VerifyPrescription />} />
         <Route path="/" element={<Landing />} />
         <Route path="/home" element={<Home />} />
         <Route path="/classement" element={<Classement />} />
         <Route path="/info" element={<InfoPage />} />
+        <Route path="/map" element={<MapPage />} />
       </Routes>
     </BrowserRouter>
   )

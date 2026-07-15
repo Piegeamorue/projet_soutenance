@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { formatDoctorName } from '../utils/formatDoctor'
 
 export default function VerifyPrescription() {
   const { token } = useParams()
@@ -80,7 +81,7 @@ export default function VerifyPrescription() {
             </div>
             <div className="py-3 flex justify-between">
               <span className="font-semibold text-gray-400">Médecin Prescripteur</span>
-              <span className="font-bold text-gray-800">Dr. {result.prescription.doctor_name}</span>
+              <span className="font-bold text-gray-800">{formatDoctorName(result.prescription.doctor_name)}</span>
             </div>
             <div className="py-3 flex justify-between">
               <span className="font-semibold text-gray-400">Patient Concerné</span>

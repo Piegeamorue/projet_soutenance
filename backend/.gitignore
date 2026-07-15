@@ -1,0 +1,22 @@
+.env
+.env.local
+.env.*.local
+node_modules/
+
+# Fichiers médicaux sensibles - ne jamais commit
+uploads/prescriptions/*.pdf
+uploads/prescriptions/*.png
+uploads/prescriptions/*.jpg
+uploads/prescriptions/*.jpeg
+
+# Autres dossiers uploads potentiellement sensibles
+uploads/
+
+# Logs (peuvent contenir des infos sensibles/requêtes API)
+*.log
+logs/
+
+# Fichiers de config locale / certificats
+*.pem
+*.key
+*.cert
